@@ -1,26 +1,211 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   FASSWERK — Design System
+   Direction: "Industrial Luxury" — recycled steel, warm brass,
+   deep workshop shadows. Dark-first, gold accent, editorial serif.
+   ============================================================ */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-cormorant);
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* brand extras */
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-rust: var(--rust);
+  --color-steel: var(--steel);
+  --color-elevated: var(--elevated);
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 3);
+  --radius-4xl: calc(var(--radius) * 4);
+
+  --ease-out-industrial: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.25rem;
+
+  --background: #0b0a09;
+  --foreground: #f4f2ef;
+
+  --card: #141210;
+  --card-foreground: #f4f2ef;
+  --popover: #16130f;
+  --popover-foreground: #f4f2ef;
+
+  --primary: #c79a3e;
+  --primary-foreground: #100c06;
+
+  --secondary: #1e1b17;
+  --secondary-foreground: #ece8e2;
+
+  --muted: #1a1714;
+  --muted-foreground: #a8a196;
+
+  --accent: #221e19;
+  --accent-foreground: #f4f2ef;
+
+  --destructive: #e0574a;
+
+  --border: #2d2822;
+  --input: #322c25;
+  --ring: #c79a3e;
+
+  --gold: #c79a3e;
+  --gold-soft: #e6c88a;
+  --rust: #c2571f;
+  --steel: #7d766c;
+  --elevated: #1a1714;
+}
+
+/* The shop is intentionally dark-first; .dark keeps shadcn primitives happy. */
+.dark {
+  --background: #0b0a09;
+  --foreground: #f4f2ef;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--gold);
+    color: #100c06;
+  }
+
+  /* Tabular numerals for every price on the site */
+  .tnum {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-[1400px] px-5 sm:px-8 lg:px-12;
+  }
+
+  /* Small uppercase label used above section headlines */
+  .eyebrow {
+    @apply text-[0.6875rem] font-medium uppercase tracking-[0.22em] text-gold;
+  }
+
+  .display {
+    font-family: var(--font-cormorant), Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.04;
+  }
+
+  /* Hairline used to separate editorial blocks */
+  .rule {
+    @apply h-px w-full bg-gradient-to-r from-border via-border/40 to-transparent;
+  }
+
+  /* Brushed-steel surface for feature panels */
+  .steel-surface {
+    background:
+      linear-gradient(160deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0) 45%),
+      linear-gradient(#17140f, #121009);
+  }
+
+  /* Subtle film grain so large dark areas don't band */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E");
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+}
+
+/* Elements revealed by GSAP start hidden — but only when JS + motion are on,
+   so no-JS crawlers and reduced-motion users always see the content. */
+@media (prefers-reduced-motion: no-preference) {
+  .js-ready [data-reveal] {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Thin, dark scrollbar to match the shell */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0a09;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d2822;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d372e;
+}
+
+/* Overlay des Warenkorb-Sheets: dunkler Schleier statt starkem Blur,
+   damit der Shop dahinter erkennbar bleibt (shadcn-Default überschrieben). */
+[data-slot="sheet-overlay"],
+[data-slot="dialog-overlay"] {
+  background: color-mix(in srgb, #050403 68%, transparent);
+  backdrop-filter: blur(2px);
 }

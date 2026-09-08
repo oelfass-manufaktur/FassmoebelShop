@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FASSWERK — Demo-Shop für Ölfass-Möbel
 
-## Getting Started
-
-First, run the development server:
+Visuelle Demo für einen Akquise-Termin. Next.js 16 (App Router) · Tailwind CSS v4 ·
+shadcn/ui (Base UI) · GSAP.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # Produktionsbuild (alle Seiten statisch vorgerendert)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Was funktioniert
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Bereich | Status |
+|---|---|
+| Startseite mit Hero, Kategorien, Bestsellern, Manufaktur, Ausverkauf, Bewertungen | fertig |
+| 5 Kategorieseiten (`/kategorie/[slug]`) | fertig |
+| 16 Produktseiten (`/produkt/[slug]`) mit Ausführungswahl, Menge, Details | fertig |
+| Warenkorb: hinzufügen, Menge ändern, entfernen, leeren | fertig |
+| Warenkorb bleibt über Reload erhalten (localStorage) | fertig |
+| Versandkostenfrei-Fortschritt ab 500 € | fertig |
+| Mobile Sticky-Kaufleiste auf der Produktseite | fertig |
+| 404-Seite, Brotkrumen, Skip-Link, Tastaturbedienung | fertig |
+| **Kaufabschluss / Zahlung** | **bewusst nicht angebunden** |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+„Zur Kasse" im Warenkorb ist absichtlich deaktiviert und mit einem Hinweis
+versehen — wie abgestimmt. Newsletter- und Suchfeld sind ebenfalls Attrappen.
 
-## Learn More
+## Bewusst noch offen
 
-To learn more about Next.js, take a look at the following resources:
+- Kein Backend, keine Zahlungsanbindung, keine Bestellabwicklung
+- Suche, Login und Wunschliste sind nur angedeutet
+- Rechtstexte (Impressum, AGB, Datenschutz) sind Platzhalter ohne Verlinkung
+- Produktdetailfotos sind vier Ausschnitte desselben Bildes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ⚠️ Bilder sind Platzhalter
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Alle Bilder in `public/images/` sind **KI-generiert** (OpenAI GPT Image 2) und
+müssen vor einem Livegang durch echte Produktfotos ersetzt werden.
+Details und Zuordnung: [`public/images/README.md`](public/images/README.md).
 
-## Deploy on Vercel
+Alle Fundstellen im Code sind markiert:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+grep -rn "PLACEHOLDER IMAGE" src/
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Auch die Produktdaten in [`src/lib/shop.ts`](src/lib/shop.ts) — Namen, Preise,
+Maße, Lieferzeiten, Bewertungen — sind erfunden.
+
+## Wenn der Dev-Server spinnt
+
+Meldet die Seite `Jest worker encountered ... child process exceptions` oder
+zeigt das Log `write EPIPE`, läuft meist noch ein alter `next dev` im
+Hintergrund, dessen Konsole weg ist. Next nennt die PID beim Start
+(„Another next dev server is already running"). Aufräumen:
+
+```powershell
+Get-NetTCPConnection -LocalPort 3000 -State Listen |
+  ForEach-Object { taskkill /PID $_.OwningProcess /F }
+Remove-Item -Recurse -Force .next
+npm run dev
+```
+
+## Aufbau
+
+```
+src/
+  app/
+    layout.tsx              Fonts, Warenkorb-Provider, Kopf-/Fußzeile, Motion
+    page.tsx                Startseite
+    kategorie/[slug]/       Kategorieseiten
+    produkt/[slug]/         Produktseiten
+    globals.css             Design-Tokens (Farben, Typo, Effekte)
+  components/
+    cart/                   Warenkorb-Logik (Context) + Sheet
+    home/                   Abschnitte der Startseite
+    motion/motion-root.tsx  zentrale GSAP-Steuerung
+    ui/                     shadcn-Primitives
+  lib/shop.ts               Demo-Katalog (Kategorien + Produkte)
+scripts/convert-images.mjs  PNG → webp für neue Bilder
+```
+
+## Design-System
+
+„Industrial Luxury": dunkle Werkstatt-Basis (`#0b0a09`), Gold als einziger
+Akzent (`#c79a3e`), Rost für den Ausverkauf (`#c2571f`). Cormorant Garamond für
+Überschriften, Inter für die Oberfläche. Alle Farben liegen als CSS-Variablen in
+`globals.css` — ein Rebranding braucht nur diesen einen Block.
+
+## Animation
+
+Zentral gesteuert in `src/components/motion/motion-root.tsx`. Server-Komponenten
+setzen nur Attribute:
+
+- `data-reveal` — Einblenden beim Scrollen, benachbarte Elemente laufen gestaffelt
+- `data-parallax="0.08"` — dezenter Parallax-Versatz (nur dekorative Ebenen)
+
+Die Hero-Timeline und das Laufband bringen eigene GSAP-Kontexte mit.
+`prefers-reduced-motion` wird überall respektiert; ohne JavaScript ist der
+gesamte Inhalt trotzdem sichtbar.
