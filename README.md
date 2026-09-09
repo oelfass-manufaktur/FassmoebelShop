@@ -18,18 +18,24 @@ npm run build   # Produktionsbuild (alle Seiten statisch vorgerendert)
 | 16 Produktseiten (`/produkt/[slug]`) mit Ausführungswahl, Menge, Details | fertig |
 | Warenkorb: hinzufügen, Menge ändern, entfernen, leeren | fertig |
 | Warenkorb bleibt über Reload erhalten (localStorage) | fertig |
+| Produktsuche im Header mit Soforttreffern | fertig |
+| Sonderanfertigungsseite mit interaktivem Briefing-Konfigurator | fertig |
+| Service-Seite für Lieferung, Rückgabe, Garantie und Pflege | fertig |
+| SEO: Canonicals, Open Graph, Sitemap, robots.txt, Product-JSON-LD | fertig |
 | Versandkostenfrei-Fortschritt ab 500 € | fertig |
 | Mobile Sticky-Kaufleiste auf der Produktseite | fertig |
 | 404-Seite, Brotkrumen, Skip-Link, Tastaturbedienung | fertig |
 | **Kaufabschluss / Zahlung** | **bewusst nicht angebunden** |
 
 „Zur Kasse" im Warenkorb ist absichtlich deaktiviert und mit einem Hinweis
-versehen — wie abgestimmt. Newsletter- und Suchfeld sind ebenfalls Attrappen.
+versehen — wie abgestimmt. Die Suche funktioniert vollständig clientseitig. Der
+Newsletter zeigt echtes UI-Feedback, speichert in der Demo aber bewusst keine Daten.
 
 ## Bewusst noch offen
 
 - Kein Backend, keine Zahlungsanbindung, keine Bestellabwicklung
-- Suche, Login und Wunschliste sind nur angedeutet
+- Login und Wunschliste sind bewusst nicht eingebaut
+- Newsletter ist eine UI-Demo ohne Backend oder Datenspeicherung
 - Rechtstexte (Impressum, AGB, Datenschutz) sind Platzhalter ohne Verlinkung
 - Produktdetailfotos sind vier Ausschnitte desselben Bildes
 
@@ -71,6 +77,9 @@ src/
     page.tsx                Startseite
     kategorie/[slug]/       Kategorieseiten
     produkt/[slug]/         Produktseiten
+    sonderanfertigung/       Briefing-Konfigurator für Individualisierung / B2B
+    service/                 Versand, Rückgabe, Garantie, Pflege
+    sitemap.ts / robots.ts   SEO-Metadatenrouten
     globals.css             Design-Tokens (Farben, Typo, Effekte)
   components/
     cart/                   Warenkorb-Logik (Context) + Sheet

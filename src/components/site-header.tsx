@@ -5,8 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
-import { Menu, Search, ShoppingBag, X } from "lucide-react";
+import { Menu, ShoppingBag, X } from "lucide-react";
 import { Wordmark } from "@/components/brand-mark";
+import { SearchDialog } from "@/components/search-dialog";
 import { useCart } from "@/components/cart/cart-provider";
 import { categories, countByCategory } from "@/lib/shop";
 import { cn } from "@/lib/utils";
@@ -185,17 +186,31 @@ export function SiteHeader() {
                   </li>
                 );
               })}
+              <li>
+                <Link
+                  href="/sonderanfertigung"
+                  aria-current={pathname === "/sonderanfertigung" ? "page" : undefined}
+                  className={cn(
+                    "focus-ring relative flex h-[4.5rem] items-center px-3.5 text-[0.8125rem] font-medium tracking-wide transition-colors",
+                    pathname === "/sonderanfertigung"
+                      ? "text-gold"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  Maßanfertigung
+                  <span
+                    className={cn(
+                      "absolute inset-x-3 bottom-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                      pathname === "/sonderanfertigung" && "scale-x-100",
+                    )}
+                  />
+                </Link>
+              </li>
             </ul>
           </nav>
 
           <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label="Suche öffnen"
-              className="focus-ring hidden size-10 cursor-pointer items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground sm:flex"
-            >
-              <Search className="size-[1.15rem]" aria-hidden="true" />
-            </button>
+            <SearchDialog />
 
             <button
               type="button"
@@ -265,13 +280,22 @@ export function SiteHeader() {
               </li>
             ))}
           </ul>
-          <Link
-            href="/#manufaktur"
-            onClick={() => setMobileOpen(false)}
-            className="focus-ring mt-8 flex h-12 items-center justify-center rounded-sm border border-border text-xs font-semibold uppercase tracking-[0.16em] text-foreground"
-          >
-            Die Manufaktur
-          </Link>
+          <div className="mt-8 grid grid-cols-2 gap-3">
+            <Link
+              href="/#manufaktur"
+              onClick={() => setMobileOpen(false)}
+              className="focus-ring flex h-12 items-center justify-center rounded-sm border border-border text-center text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-foreground"
+            >
+              Die Manufaktur
+            </Link>
+            <Link
+              href="/sonderanfertigung"
+              onClick={() => setMobileOpen(false)}
+              className="focus-ring flex h-12 items-center justify-center rounded-sm border border-gold/40 bg-gold/5 text-center text-[0.6875rem] font-semibold uppercase tracking-[0.14em] text-gold"
+            >
+              Maßanfertigung
+            </Link>
+          </div>
         </nav>
       </div>
     </>

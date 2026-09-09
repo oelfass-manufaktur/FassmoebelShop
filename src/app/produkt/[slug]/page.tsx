@@ -9,6 +9,7 @@ import {
   RotateCcw,
   ShieldCheck,
   Sparkles,
+  Star,
   Truck,
 } from "lucide-react";
 import {
@@ -41,6 +42,13 @@ export async function generateMetadata({
   return {
     title: `${p.name} — ${p.subtitle}`,
     description: p.shortDescription,
+    alternates: { canonical: `/produkt/${p.slug}` },
+    openGraph: {
+      type: "website",
+      title: `${p.name} — ${p.subtitle}`,
+      description: p.shortDescription,
+      images: [{ url: p.image, alt: `${p.name} — ${p.subtitle}` }],
+    },
   };
 }
 
@@ -62,9 +70,62 @@ export default async function ProductPage({
 
   const category = categories.find((c) => c.slug === product.category)!;
   const related = relatedProducts(product);
+  const productUrl = `https://fassmoebel-shop.vercel.app/produkt/${product.slug}`;
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: `${product.name} — ${product.subtitle}`,
+      description: product.shortDescription,
+      image: [`https://fassmoebel-shop.vercel.app${product.image}`],
+      sku: product.slug,
+      brand: { "@type": "Brand", name: "Fasswerk" },
+      offers: {
+        "@type": "Offer",
+        url: productUrl,
+        priceCurrency: "EUR",
+        price: product.price,
+        availability:
+          product.stock > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+        itemCondition: "https://schema.org/NewCondition",
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Start",
+          item: "https://fassmoebel-shop.vercel.app/",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: category.name,
+          item: `https://fassmoebel-shop.vercel.app/kategorie/${category.slug}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: product.name,
+          item: productUrl,
+        },
+      ],
+    },
+  ];
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+        }}
+      />
       <div className="shell pt-8">
         <nav aria-label="Brotkrumen">
           <ol className="flex flex-wrap items-center gap-1.5 text-xs text-steel">
@@ -158,6 +219,18 @@ export default async function ProductPage({
           <p className="mt-2 text-base text-muted-foreground">
             {product.subtitle}
           </p>
+          <a
+            href="#bewertungen"
+            className="focus-ring mt-4 inline-flex items-center gap-2 rounded-sm text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <span className="flex items-center gap-0.5" aria-hidden="true">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star key={index} className="size-3.5 fill-gold text-gold" />
+              ))}
+            </span>
+            <span className="tnum font-medium text-foreground">4,9/5</span>
+            <span>· 312 Manufaktur-Bewertungen</span>
+          </a>
           <p className="mt-6 max-w-lg text-sm leading-relaxed text-muted-foreground">
             {product.shortDescription}
           </p>
@@ -221,7 +294,7 @@ export default async function ProductPage({
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="versand" className="border-b border-border">
+            <AccordionItem id="versand" value="versand" className="scroll-mt-24 border-b border-border">
               <AccordionTrigger className="py-5 text-sm font-semibold uppercase tracking-[0.14em] text-foreground">
                 Versand & Rückgabe
               </AccordionTrigger>
@@ -249,6 +322,91 @@ export default async function ProductPage({
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      <section
+        id="bewertungen"
+        className="scroll-mt-24 border-t border-border bg-card py-16 sm:py-20"
+        aria-labelledby="reviews-title"
+      >
+        <div className="shell grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center lg:gap-16">
+          <div data-reveal>
+            <p className="eyebrow">Manufaktur-Bewertungen</p>
+            <div className="mt-5 flex items-end gap-3">
+              <span className="tnum display text-6xl text-foreground">4,9</span>
+              <span className="pb-2 text-sm text-muted-foreground">von 5</span>
+            </div>
+            <div className="mt-3 flex items-center gap-1" aria-label="4,9 von 5 Sternen">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star key={index} className="size-4 fill-gold text-gold" aria-hidden="true" />
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-steel">312 Bewertungen im Demo-Datenbestand</p>
+          </div>
+
+          <blockquote data-reveal className="border-l border-gold/40 pl-6 sm:pl-8">
+            <p id="reviews-title" className="font-display text-[clamp(1.6rem,3vw,2.35rem)] leading-snug text-foreground">
+              „Die Verarbeitung wirkt nicht wie Dekoration aus einem Fass, sondern wie ein Möbelstück, das zufällig einmal ein Fass war.“
+            </p>
+            <footer className="mt-5 text-xs text-muted-foreground">
+              Demo-Kundenstimme · verifizierte Bewertungen vor Livegang anbinden
+            </footer>
+          </blockquote>
+        </div>
+      </section>
+
+      <section id="faq" className="scroll-mt-24 border-t border-border py-16 sm:py-20" aria-labelledby="faq-title">
+        <div className="shell grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:gap-16">
+          <div data-reveal>
+            <p className="eyebrow">Vor dem Kauf</p>
+            <h2 id="faq-title" className="display mt-4 text-[clamp(2rem,4vw,3rem)] text-foreground">
+              Fragen, die bei echten Fässern dazugehören.
+            </h2>
+            <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
+              Noch spezieller? Wunschmaß, RAL-Farbe oder Branding lassen sich über die Sonderanfertigung direkt als Briefing zusammenstellen.
+            </p>
+            <Link
+              href="/sonderanfertigung"
+              className="focus-ring mt-6 inline-flex rounded-sm text-xs font-semibold uppercase tracking-[0.16em] text-gold hover:text-gold-soft"
+            >
+              Sonderanfertigung öffnen →
+            </Link>
+          </div>
+
+          <Accordion className="border-t border-border" multiple={false}>
+            {[
+              {
+                q: "Riecht das Möbel noch nach Öl oder Industrie?",
+                a: "Nein. Das Fass wird vollständig entkernt, gereinigt und vor dem Ausbau oberflächenbehandelt. Was bleibt, ist die sichtbare Geschichte im Stahl — nicht der frühere Inhalt.",
+              },
+              {
+                q: "Sind Kanten und Öffnungen sicher bearbeitet?",
+                a: "Geschnittene Kanten werden entgratet und je nach Konstruktion eingefasst oder verdeckt. Vor der Auslieferung erfolgt eine Endkontrolle von Kanten, Beschlägen und beweglichen Teilen.",
+              },
+              {
+                q: "Wie stark unterscheidet sich mein Exemplar vom Foto?",
+                a: "Form und Ausbau entsprechen dem Modell. Kleine Dellen, Patina, Schweißspuren und vorhandene Schriftreste können sich unterscheiden, weil der ursprüngliche Stahl nicht künstlich vereinheitlicht wird.",
+              },
+              {
+                q: "Kann ich Farbe, Maße oder Details ändern?",
+                a: "Ja. RAL-Farbe, Innenausbau, Logo, Beleuchtung und je nach Modell auch Maße lassen sich als Sonderanfertigung abstimmen.",
+              },
+              {
+                q: "Wann ist das Stück versandbereit?",
+                a: `${product.leadTime}. Bei Sonderanfertigungen wird der Termin nach der technischen Freigabe konkret bestätigt.`,
+              },
+            ].map((item, index) => (
+              <AccordionItem key={item.q} value={`faq-${index}`} className="border-b border-border">
+                <AccordionTrigger className="py-5 text-left text-sm font-medium text-foreground">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="pb-6 text-sm leading-relaxed text-muted-foreground">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </section>
 

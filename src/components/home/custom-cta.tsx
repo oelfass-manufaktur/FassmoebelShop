@@ -63,11 +63,11 @@ export function CustomCta() {
           </ul>
 
           <Link
-            href="mailto:werkstatt@fasswerk.de"
+            href="/sonderanfertigung"
             data-reveal
             className="focus-ring group mt-10 inline-flex h-13 items-center gap-2.5 rounded-sm bg-primary px-8 text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground transition-colors duration-300 hover:bg-gold-soft"
           >
-            Anfrage starten
+            Konfiguration starten
             <ArrowRight
               className="size-4 transition-transform duration-300 group-hover:translate-x-1"
               aria-hidden="true"

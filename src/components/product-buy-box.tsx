@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, Minus, Plus, ShoppingBag } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, Palette, RotateCcw, ShieldCheck, ShoppingBag, Truck, Minus, Plus } from "lucide-react";
 import { useCart } from "@/components/cart/cart-provider";
 import { discountPercent, formatPrice, type Product } from "@/lib/shop";
 import { cn } from "@/lib/utils";
@@ -137,6 +138,36 @@ export function ProductBuyBox({ product }: { product: Product }) {
           <>Auf Lager · {product.stock} Exemplare verfügbar</>
         )}
       </p>
+
+      <ul className="mt-6 grid grid-cols-3 divide-x divide-border border-y border-border py-4">
+        {[
+          { icon: Truck, label: "Spedition", text: "ab 500 € frei" },
+          { icon: ShieldCheck, label: "Garantie", text: "5 Jahre" },
+          { icon: RotateCcw, label: "Rückgabe", text: "14 Tage" },
+        ].map(({ icon: Icon, label, text }) => (
+          <li key={label} className="px-3 first:pl-0 last:pr-0">
+            <Icon className="size-3.5 text-gold/75" aria-hidden="true" />
+            <p className="mt-2 text-[0.6875rem] font-medium uppercase tracking-[0.12em] text-foreground">
+              {label}
+            </p>
+            <p className="mt-0.5 text-[0.6875rem] text-steel">{text}</p>
+          </li>
+        ))}
+      </ul>
+
+      <Link
+        href="/sonderanfertigung"
+        className="focus-ring group mt-5 flex items-center justify-between rounded-sm border border-border bg-card px-4 py-3.5 transition-colors hover:border-gold/40"
+      >
+        <span className="flex min-w-0 items-center gap-3">
+          <Palette className="size-4 shrink-0 text-gold/75" aria-hidden="true" />
+          <span>
+            <span className="block text-xs font-medium text-foreground">Nicht Ihre Ausführung dabei?</span>
+            <span className="mt-0.5 block text-[0.6875rem] text-muted-foreground">RAL-Farbe, Wunschmaß, Logo & Licht konfigurieren</span>
+          </span>
+        </span>
+        <ArrowRight className="size-4 shrink-0 text-steel transition-transform group-hover:translate-x-1 group-hover:text-gold" aria-hidden="true" />
+      </Link>
 
       {/* Sticky-Kaufleiste für Mobil */}
       <div

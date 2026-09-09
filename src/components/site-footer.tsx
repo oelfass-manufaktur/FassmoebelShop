@@ -1,17 +1,23 @@
 import Link from "next/link";
-import { ArrowRight, Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { BarrelMark, InstagramGlyph } from "@/components/brand-mark";
+import { NewsletterForm } from "@/components/newsletter-form";
 import { categories } from "@/lib/shop";
 
 const service = [
-  "Versand & Lieferung",
-  "Pflegehinweise",
-  "Rückgabe & Garantie",
-  "Sonderanfertigung",
-  "Gastronomie & B2B",
+  { label: "Versand & Lieferung", href: "/service#lieferung" },
+  { label: "Pflegehinweise", href: "/service#pflege" },
+  { label: "Rückgabe & Garantie", href: "/service#rueckgabe" },
+  { label: "Sonderanfertigung", href: "/sonderanfertigung#konfigurator" },
+  { label: "Gastronomie & B2B", href: "/sonderanfertigung#b2b" },
 ];
 
-const company = ["Die Manufaktur", "Nachhaltigkeit", "Presse", "Kontakt", "Jobs"];
+const company = [
+  { label: "Die Manufaktur", href: "/#manufaktur" },
+  { label: "Sonderanfertigung", href: "/sonderanfertigung" },
+  { label: "Kollektion", href: "/kategorie/minibars" },
+  { label: "Kontakt", href: "mailto:werkstatt@fasswerk.de" },
+];
 
 export function SiteFooter() {
   return (
@@ -32,41 +38,7 @@ export function SiteFooter() {
             </p>
           </div>
 
-          <form
-            data-reveal
-            className="w-full"
-            aria-label="Newsletter abonnieren"
-          >
-            <label
-              htmlFor="newsletter-email"
-              className="mb-2 block text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground"
-            >
-              E-Mail-Adresse
-            </label>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                id="newsletter-email"
-                type="email"
-                name="email"
-                autoComplete="email"
-                placeholder="name@beispiel.de"
-                className="focus-ring h-12 w-full flex-1 rounded-sm border border-border bg-card px-4 text-sm text-foreground placeholder:text-steel"
-              />
-              <button
-                type="submit"
-                className="focus-ring group inline-flex h-12 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-sm bg-primary px-6 text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground transition-colors hover:bg-gold-soft"
-              >
-                Abonnieren
-                <ArrowRight
-                  className="size-4 transition-transform duration-300 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
-              </button>
-            </div>
-            <p className="mt-3 text-[0.6875rem] leading-relaxed text-steel">
-              Demo-Formular ohne Anbindung. Abmeldung jederzeit möglich.
-            </p>
-          </form>
+          <NewsletterForm />
         </div>
       </section>
 
@@ -120,17 +92,36 @@ export function SiteFooter() {
         </FooterColumn>
 
         <FooterColumn title="Service">
-          {service.map((s) => (
-            <li key={s}>
-              <span className="cursor-default">{s}</span>
+          {service.map((item) => (
+            <li key={item.label}>
+              <Link
+                href={item.href}
+                className="focus-ring rounded-sm transition-colors hover:text-gold"
+              >
+                {item.label}
+              </Link>
             </li>
           ))}
         </FooterColumn>
 
         <FooterColumn title="Unternehmen">
-          {company.map((s) => (
-            <li key={s}>
-              <span className="cursor-default">{s}</span>
+          {company.map((item) => (
+            <li key={item.label}>
+              {item.href.startsWith("mailto:") ? (
+                <a
+                  href={item.href}
+                  className="focus-ring rounded-sm transition-colors hover:text-gold"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <Link
+                  href={item.href}
+                  className="focus-ring rounded-sm transition-colors hover:text-gold"
+                >
+                  {item.label}
+                </Link>
+              )}
             </li>
           ))}
         </FooterColumn>

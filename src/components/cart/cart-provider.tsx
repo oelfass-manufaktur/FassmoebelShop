@@ -35,6 +35,9 @@ const STORAGE_KEY = "fasswerk.cart.v1";
 const sameLine = (l: CartLine, slug: string, finish: string) =>
   l.slug === slug && l.finish === finish;
 
+const stockFor = (slug: string) =>
+  products.find((product) => product.slug === slug)?.stock ?? 0;
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "hydrate":
@@ -49,7 +52,7 @@ function reducer(state: State, action: Action): State {
           ...state,
           lines: state.lines.map((l) =>
             sameLine(l, action.slug, action.finish)
-              ? { ...l, qty: Math.min(l.qty + action.qty, 99) }
+              ? { ...l, qty: Math.min(l.qty + action.qty, stockFor(action.slug)) }
               : l,
           ),
         };
@@ -58,7 +61,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         lines: [
           ...state.lines,
-          { slug: action.slug, finish: action.finish, qty: action.qty },
+          { slug: action.slug, finish: action.finish, qty: Math.min(action.qty, stockFor(action.slug)) },
         ],
       };
     }
@@ -76,7 +79,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         lines: state.lines.map((l) =>
           sameLine(l, action.slug, action.finish)
-            ? { ...l, qty: Math.min(action.qty, 99) }
+            ? { ...l, qty: Math.min(action.qty, stockFor(action.slug)) }
             : l,
         ),
       };
@@ -134,12 +137,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       const parsed = raw ? (JSON.parse(raw) as CartLine[]) : null;
       if (Array.isArray(parsed)) {
-        lines = parsed.filter(
-          (l) =>
-            l &&
-            typeof l.slug === "string" &&
-            products.some((p) => p.slug === l.slug),
-        );
+        lines = parsed
+          .filter(
+            (l) =>
+              l &&
+              typeof l.slug === "string" &&
+              typeof l.finish === "string" &&
+              Number.isFinite(l.qty) &&
+              l.qty > 0 &&
+              products.some(
+                (product) =>
+                  product.slug === l.slug &&
+                  product.finishes.some((finish) => finish.name === l.finish),
+              ),
+          )
+          .map((line) => ({
+            ...line,
+            qty: Math.min(Math.floor(line.qty), stockFor(line.slug)),
+          }));
       }
     } catch {
       /* Privater Modus / Storage deaktiviert — dann eben leer starten. */

@@ -22,12 +22,30 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://fassmoebel-shop.vercel.app"),
   title: {
     default: "Fasswerk — Möbel aus recycelten Ölfässern",
     template: "%s | Fasswerk Manufaktur",
   },
   description:
     "Minibars, Stehtische, Sessel und Deko aus echten 200-Liter-Stahlfässern. Handgefertigte Unikate aus Dortmund.",
+  openGraph: {
+    type: "website",
+    locale: "de_DE",
+    siteName: "Fasswerk Manufaktur",
+    title: "Fasswerk — Möbel aus recycelten Ölfässern",
+    description:
+      "Minibars, Stehtische, Sessel und Deko aus echten 200-Liter-Stahlfässern. Handgefertigte Unikate aus Dortmund.",
+    images: [
+      {
+        url: "/images/hero-barrel-lounge.webp",
+        width: 1536,
+        height: 1024,
+        alt: "Fasswerk Möbel aus recycelten Stahlfässern",
+      },
+    ],
+  },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

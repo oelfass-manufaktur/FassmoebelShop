@@ -23,7 +23,17 @@ export async function generateMetadata({
   const { slug } = await params;
   const cat = getCategory(slug);
   if (!cat) return {};
-  return { title: cat.name, description: cat.description };
+  return {
+    title: cat.name,
+    description: cat.description,
+    alternates: { canonical: `/kategorie/${cat.slug}` },
+    openGraph: {
+      type: "website",
+      title: `${cat.name} — Fasswerk`,
+      description: cat.description,
+      images: [{ url: cat.image, alt: cat.name }],
+    },
+  };
 }
 
 export default async function CategoryPage({
